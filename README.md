@@ -31,19 +31,24 @@ composer require arielespinoza07/console-forge
 
 ```php
 use ConsoleForge\IO;
+use ConsoleForge\Descriptors\ArgDescriptor;
+use ConsoleForge\Descriptors\CommandDescriptor;
+use ConsoleForge\Descriptors\OptDescriptor;
+use Symfony\Component\Console\Command\Command;
 
-$greetCommand = new \ConsoleForge\Descriptors\CommandDescriptor(
+$greetCommand = new CommandDescriptor(
     name: 'greet',
     description: 'Say hello to someone',
     args: [
-        new \ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')
+        new ArgDescriptor('name', 'Person name')
     ],
     opts: [
-        new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase greeting')
+        new OptDescriptor('yell', 'y', 'Uppercase greeting')
     ],
     handler: function (string $name, bool $yell = false, IO $io): void {
         $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
         $io->render("<div class='font-bold text-green'>$msg</div>");
+        return Command::SUCCESS; // exit code
     }
 );
 
@@ -53,13 +58,14 @@ Invokable class example:
 
 ```php
 use ConsoleForge\IO;
+use Symfony\Component\Console\Command\Command;
 
 final class CreateUser
 {
     public function __invoke(string $email, bool $admin = false, IO $io): int
     {
         $io->render("<div class='text-green'>User {$email} created" . ($admin ? ' as admin' : '') . "</div>");
-        return 0; // exit code
+        return Command::SUCCESS; // exit code
     }
 }
 
@@ -71,19 +77,20 @@ final class CreateUser
 
 ```php
 use ConsoleForge\InMemoryCommandRegistry;
-use ConsoleForge\Descriptors\{CommandDescriptor, ArgDescriptor, OptDescriptor};
+use ConsoleForge\Descriptors\ArgDescriptor;
+use ConsoleForge\Descriptors\CommandDescriptor;
+use ConsoleForge\Descriptors\OptDescriptor;
 
 $registry = new InMemoryCommandRegistry();
 
-$registry->add($greetCommand);
-
-$registry->add(new CommandDescriptor(
-    name: 'user:create',
-    description: 'Create a new user',
-    args: [new ArgDescriptor('email', 'User email')],
-    opts: [new OptDescriptor('admin', 'a', 'Make admin')],
-    handler: CreateUser::class,
-));
+$registry->add($greetCommand)
+        ->add(new CommandDescriptor(
+            name: 'user:create',
+            description: 'Create a new user',
+            args: [new ArgDescriptor('email', 'User email')],
+            opts: [new OptDescriptor('admin', 'a', 'Make admin')],
+            handler: CreateUser::class,
+        ));
 
 ```
 
