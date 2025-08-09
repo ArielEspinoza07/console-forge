@@ -7,6 +7,7 @@ Thumbs.db
 # Dependencies
 /vendor
 /composer.lock
+/config
 
 # Cache & Logs
 /.phpunit.cache
