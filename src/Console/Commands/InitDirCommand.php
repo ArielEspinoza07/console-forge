@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ConsoleForge\Console\Commands;
 
 use ConsoleForge\IO;
+use ConsoleForge\Support\Notice\Notice;
+use ConsoleForge\Support\Notice\TermwindNoticeRenderer;
 use FilesystemIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -18,12 +20,13 @@ final class InitDirCommand
         $configDir = getcwd().'/config/console-forge';
 
         if (is_dir($configDir) && ! $force) {
-            $io->render(<<<'HTML'
-                <div class="px-2 py-1 bg-yellow-600 text-black font-bold">
-                    ⚠️  The config/console-forge directory already exists.
-                </div>
-                <p class="mt-1">Use <span class="font-bold text-yellow">--force</span> to overwrite it.</p>
-            HTML);
+            (new TermwindNoticeRenderer)->render(
+                notice: Notice::warning(
+                    message: 'The file config/console-forge.php already exists.',
+                    detail: 'Use --force to overwrite it.',
+                ),
+                io: $io,
+            );
 
             return Command::FAILURE;
         }
@@ -65,12 +68,13 @@ final class InitDirCommand
 
         file_put_contents($exampleFile, $template);
 
-        $io->render(<<<'HTML'
-            <div class="px-2 py-1 bg-green-600 text-white font-bold">
-                ✅  Configuration directory created successfully: config/console-forge
-            </div>
-            <p class="mt-1">A sample file was created: <span class="font-bold">example.php</span></p>
-        HTML);
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::success(
+                message: 'Configuration directory created successfully: config/console-forge',
+                detail: 'A sample file was created: example.php',
+            ),
+            io: $io,
+        );
 
         return Command::SUCCESS;
     }

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace ConsoleForge\Console\Commands;
 
 use ConsoleForge\IO;
+use ConsoleForge\Support\Notice\Notice;
+use ConsoleForge\Support\Notice\TermwindNoticeRenderer;
 use Symfony\Component\Console\Command\Command;
 
 final class InitFileCommand
@@ -14,12 +16,13 @@ final class InitFileCommand
         $configPath = getcwd().'/config/console-forge.php';
 
         if (file_exists($configPath) && ! $force) {
-            $io->render(<<<'HTML'
-                <div class="px-2 py-1 bg-yellow-600 text-black font-bold">
-                    ⚠️  The file config/console-forge.php already exists.
-                </div>
-                <p class="mt-1">Use <span class="font-bold text-yellow">--force</span> to overwrite it.</p>
-            HTML);
+            (new TermwindNoticeRenderer)->render(
+                notice: Notice::warning(
+                    message: 'The file config/console-forge.php already exists.',
+                    detail: 'Use --force to overwrite it.',
+                ),
+                io: $io,
+            );
 
             return Command::FAILURE;
         }
@@ -58,11 +61,13 @@ final class InitFileCommand
 
         file_put_contents($configPath, $template);
 
-        $io->render(<<<'HTML'
-            <div class="px-2 py-1 bg-green-600 text-white font-bold">
-                ✅  Configuration file created successfully: config/console-forge.php
-            </div>
-        HTML);
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::success(
+                message: 'Configuration file created successfully: config/console-forge.php',
+                detail: 'An example command was created, check inside the console-forge.php configuration file.',
+            ),
+            io: $io,
+        );
 
         return Command::SUCCESS;
     }
