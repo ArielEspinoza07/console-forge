@@ -1,0 +1,45 @@
+{
+  "name": "arielespinoza07/console-forge",
+  "description": "Framework-agnostic command definition layer mapped to symfony/console",
+  "type": "library",
+  "keywords": ["php", "cli", "console"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ariel Espinoza",
+      "email": "arielespinoza46@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "symfony/console": "^7.3",
+    "nunomaduro/termwind": "^2.3"
+  },
+  "require-dev": {
+    "pestphp/pest": "^3.8",
+    "phpstan/phpstan": "^2.1",
+    "laravel/pint": "^1.24"
+  },
+  "autoload": {
+    "psr-4": {
+      "ConsoleForge\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "bin": ["bin/console-forge"],
+  "scripts": {
+    "test": "vendor/bin/pest",
+    "lint": "vendor/bin/pint --test",
+    "analyse": "vendor/bin/phpstan analyse"
+  },
+  "suggest": {
+    "nunomaduro/collision": "Pretty errors during CLI exceptions",
+    "psr/container": "Enable container-based handler resolution"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
