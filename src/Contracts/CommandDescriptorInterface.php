@@ -10,10 +10,14 @@ interface CommandDescriptorInterface
 
     public function description(): string;
 
-    /** @return ArgDescriptorInterface[] */
+    /**
+     * @return list<ArgDescriptorInterface>
+     */
     public function args(): array;
 
-    /** @return OptDescriptorInterface[] */
+    /**
+     * @return list<OptDescriptorInterface>
+     */
     public function opts(): array;
 
     public function handler(): mixed;

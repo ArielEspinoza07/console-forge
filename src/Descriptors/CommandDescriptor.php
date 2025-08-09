@@ -11,8 +11,8 @@ use ConsoleForge\Contracts\OptDescriptorInterface;
 class CommandDescriptor implements CommandDescriptorInterface
 {
     /**
-     * @param  ArgDescriptorInterface[]  $args
-     * @param  OptDescriptorInterface[]  $opts
+     * @param  list<ArgDescriptorInterface>  $args
+     * @param  list<OptDescriptorInterface>  $opts
      * @param  array<string, mixed>  $extra
      */
     public function __construct(
