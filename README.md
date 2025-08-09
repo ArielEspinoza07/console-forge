@@ -98,10 +98,10 @@ final class CreateUser
 2. Register commands in the registry
 
 ```php
-use ConsoleForge\InMemoryCommandRegistry;
 use ConsoleForge\Descriptors\ArgDescriptor;
 use ConsoleForge\Descriptors\CommandDescriptor;
 use ConsoleForge\Descriptors\OptDescriptor;
+use ConsoleForge\Registry\InMemoryCommandRegistry;
 
 $registry = new InMemoryCommandRegistry();
 
@@ -121,26 +121,29 @@ $registry->add($greetCommand)
 3. Map to Symfony Console and run
 
 ```php
-use ConsoleForge\SymfonyCommandMapper;
+use ConsoleForge\App;
 use ConsoleForge\Support\ConfigLoader;
-use Symfony\Component\Console\Application;
 
 // Optional pretty errors (requires nunomaduro/collision)
 if (class_exists(\NunoMaduro\Collision\Provider::class)) {
     (new \NunoMaduro\Collision\Provider())->register();
 }
 
-// project configs
-ConfigLoader::loadProjectConfigs($registry, getcwd());
+if (class_exists(ConfigLoader::class)) {
+    // Try loading single-file or directory-based configs.
+    ConfigLoader::loadProjectConfigs($registry, getcwd());
+}
 
 // Dynamic version if available
 $version = class_exists(\Composer\InstalledVersions::class)
         ? (\Composer\InstalledVersions::getPrettyVersion('arielespinoza07/console-forge') ?? 'dev')
         : 'dev';
 
-$app = new Application('ConsoleForge', $version);
-$mapper = new SymfonyCommandMapper();
-$mapper->attach($app, $registry->all());
+$app = App::make(
+        registry: $registry,
+        name: 'ConsoleForge',
+        version: $version,
+);
 
 $app->run();
 ```
