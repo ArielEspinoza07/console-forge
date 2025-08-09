@@ -3,14 +3,13 @@
 
 declare(strict_types=1);
 
+use ConsoleForge\App;
 use ConsoleForge\Console\Commands\InitDirCommand;
 use ConsoleForge\Console\Commands\InitFileCommand;
 use ConsoleForge\Descriptors\CommandDescriptor;
 use ConsoleForge\Descriptors\OptDescriptor;
-use ConsoleForge\InMemoryCommandRegistry;
+use ConsoleForge\Registry\InMemoryCommandRegistry;
 use ConsoleForge\Support\ConfigLoader;
-use ConsoleForge\SymfonyCommandMapper;
-use Symfony\Component\Console\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -43,16 +42,20 @@ $registry->add(
         ),
 );
 
-// project configs
-ConfigLoader::loadProjectConfigs($registry, getcwd());
+if (class_exists(ConfigLoader::class)) {
+    // Try loading single-file or directory-based configs.
+    ConfigLoader::loadProjectConfigs($registry, getcwd());
+}
 
 // Dynamic version if available
 $version = class_exists(\Composer\InstalledVersions::class)
         ? (\Composer\InstalledVersions::getPrettyVersion('arielespinoza07/console-forge') ?? 'dev')
         : 'dev';
 
-$app = new Application('ConsoleForge', $version);
-$mapper = new SymfonyCommandMapper();
-$mapper->attach($app, $registry->all());
+$app = App::make(
+        registry: $registry,
+        name: 'ConsoleForge',
+        version: $version,
+);
 
 $app->run();
