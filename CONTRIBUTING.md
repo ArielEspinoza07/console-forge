@@ -39,8 +39,10 @@ git commit -m "feat(registry): improve registry"
 ## 🛠 Project Setup
 
 ```bash
-git clone https://github.com/arielespinoza07/aether.git
+git clone https://github.com/arielespinoza07/console-forge.git
+
 cd aether
+
 composer install
 ```
 
