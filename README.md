@@ -2,6 +2,12 @@
 
 **Framework-agnostic** command definition layer mapped to [symfony/console](https://github.com/symfony/console), with first-class [Termwind](https://github.com/nunomaduro/termwind) integration for a beautiful developer experience.
 
+<p align="center">
+    <a href="https://packagist.org/packages/arielespinoza07/console-forge"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/arielespinoza07/console-forge"></a>
+    <a href="https://packagist.org/packages/arielespinoza07/console-forge"><img alt="Latest Version" src="https://img.shields.io/packagist/v/arielespinoza07/console-forge"></a>
+    <a href="https://packagist.org/packages/arielespinoza07/console-forge"><img alt="License" src="https://img.shields.io/packagist/l/arielespinoza07/console-forge"></a>
+</p>
+
 > **Requires [PHP 8.3+](https://php.net/releases/)**
 ---
 
@@ -34,6 +40,8 @@ use ConsoleForge\IO;
 use ConsoleForge\Descriptors\ArgDescriptor;
 use ConsoleForge\Descriptors\CommandDescriptor;
 use ConsoleForge\Descriptors\OptDescriptor;
+use ConsoleForge\Support\Notice\Notice;
+use ConsoleForge\Support\Notice\TermwindNoticeRenderer;
 use Symfony\Component\Console\Command\Command;
 
 $greetCommand = new CommandDescriptor(
@@ -45,9 +53,15 @@ $greetCommand = new CommandDescriptor(
     opts: [
         new OptDescriptor('yell', 'y', 'Uppercase greeting')
     ],
-    handler: function (string $name, bool $yell = false, IO $io): void {
+    handler: function (IO $io, string $name, bool $yell = false): void {
         $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
-        $io->render("<div class='font-bold text-green'>$msg</div>");
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::success(
+                message: $msg,
+            ),
+            io: $io,
+        );
+        
         return Command::SUCCESS; // exit code
     }
 );
@@ -58,13 +72,21 @@ Invokable class example:
 
 ```php
 use ConsoleForge\IO;
+use ConsoleForge\Support\Notice\Notice;
+use ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer;
 use Symfony\Component\Console\Command\Command;
 
 final class CreateUser
 {
-    public function __invoke(string $email, bool $admin = false, IO $io): int
+    public function __invoke(IO $io, string $email, bool $admin = false): int
     {
-        $io->render("<div class='text-green'>User {$email} created" . ($admin ? ' as admin' : '') . "</div>");
+        (new SymfonyStyleNoticeRenderer())->render(
+            notice: Notice::success(
+                message: "User {$email} created" . ($admin ? ' as admin' : ''),
+            ),
+            io: $io,
+        );
+        
         return Command::SUCCESS; // exit code
     }
 }
@@ -99,7 +121,8 @@ $registry->add($greetCommand)
 3. Map to Symfony Console and run
 
 ```php
-use ConsoleForge\Bridge\SymfonyCommandMapper;
+use ConsoleForge\SymfonyCommandMapper;
+use ConsoleForge\Support\ConfigLoader;
 use Symfony\Component\Console\Application;
 
 // Optional pretty errors (requires nunomaduro/collision)
@@ -107,8 +130,15 @@ if (class_exists(\NunoMaduro\Collision\Provider::class)) {
     (new \NunoMaduro\Collision\Provider())->register();
 }
 
-$app = new Application('ConsoleForge Demo', '0.1.0');
+// project configs
+ConfigLoader::loadProjectConfigs($registry, getcwd());
 
+// Dynamic version if available
+$version = class_exists(\Composer\InstalledVersions::class)
+        ? (\Composer\InstalledVersions::getPrettyVersion('arielespinoza07/console-forge') ?? 'dev')
+        : 'dev';
+
+$app = new Application('ConsoleForge', $version);
 $mapper = new SymfonyCommandMapper();
 $mapper->attach($app, $registry->all());
 
