@@ -11,9 +11,9 @@ use ConsoleForge\OptDescriptorInterface;
 class CommandDescriptor implements CommandDescriptorInterface
 {
     /**
-     * @param ArgDescriptorInterface[] $args
-     * @param OptDescriptorInterface[] $opts
-     * @param array<string, mixed> $extra
+     * @param  ArgDescriptorInterface[]  $args
+     * @param  OptDescriptorInterface[]  $opts
+     * @param  array<string, mixed>  $extra
      */
     public function __construct(
         protected string $name,
@@ -24,8 +24,7 @@ class CommandDescriptor implements CommandDescriptorInterface
         protected ?string $help = null,
         protected bool $hidden = false,
         protected array $extra = [],
-    ) {
-    }
+    ) {}
 
     public function name(): string
     {
@@ -68,7 +67,7 @@ class CommandDescriptor implements CommandDescriptorInterface
     }
 
     /**
-     * @param array<string, mixed> $extra
+     * @param  array<string, mixed>  $extra
      * @return $this
      */
     public function withExtra(array $extra): static
