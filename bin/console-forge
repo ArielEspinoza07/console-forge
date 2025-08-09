@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Symfony\Component\Console\Application;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+// 1) Search if nunomaduro/collision is installed and register it
+if (class_exists(\NunoMaduro\Collision\Provider::class)) {
+    (new \NunoMaduro\Collision\Provider())->register();
+}
+
+$app = new Application('ConsoleForge', '0.1.0');
+
+$app->run();
