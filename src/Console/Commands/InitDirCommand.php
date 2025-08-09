@@ -43,13 +43,20 @@ final class InitDirCommand
 
         return [
             'commands' => [
-                new \ConsoleForge\Descriptors\CommandDescriptor(
-                    name: 'greet',
+                new ConsoleForge\Descriptors\CommandDescriptor(
+                    name: 'greetDir',
                     description: 'Say Hello',
-                    args: [new \ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
-                    opts: [new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
-                    handler: function (string $name, \ConsoleForge\IO $io, bool $yell = false): int {
+                    args: [new ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
+                    opts: [new ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
+                    handler: function (string $name, ConsoleForge\IO $io, bool $yell = false): int {
+                        $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
                         // using termwind
+                        //(new ConsoleForge\Support\Notice\TermwindNoticeRenderer)->render(
+                        //    notice: ConsoleForge\Support\Notice\Notice::success(
+                        //        message: $msg,
+                        //    ),
+                        //    io: $io,
+                        //);
                         //    $io->render(
                         //        $yell ? "<div class='font-bold uppercase'>Hello, $name!</div>"
                         //              : "<div>Hello, $name!</div>"
@@ -57,8 +64,13 @@ final class InitDirCommand
                         // return Symfony\Component\Console\Command\Command::SUCCESS;
                 
                         // Fallback a SymfonyStyle vía IO
-                        $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
-                        $io->writeln($msg);
+                        (new ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer())->render(
+                            notice: ConsoleForge\Support\Notice\Notice::success(
+                                message: $msg,
+                            ),
+                            io: $io,
+                        );
+                        
                         return Symfony\Component\Console\Command\Command::SUCCESS;
                     }
                 ),
@@ -71,7 +83,7 @@ final class InitDirCommand
         (new TermwindNoticeRenderer)->render(
             notice: Notice::success(
                 message: 'Configuration directory created successfully: config/console-forge',
-                detail: 'A sample file was created: example.php',
+                detail: 'A sample file with a sample command was created: example.php',
             ),
             io: $io,
         );

@@ -19,7 +19,7 @@ final class InitFileCommand
             (new TermwindNoticeRenderer)->render(
                 notice: Notice::warning(
                     message: 'The file config/console-forge.php already exists.',
-                    detail: 'Use --force to overwrite it.',
+                    detail: 'You may use [--force] option to overwrite it.',
                 ),
                 io: $io,
             );
@@ -36,13 +36,20 @@ final class InitFileCommand
 
         return [
             'commands' => [
-                new \ConsoleForge\Descriptors\CommandDescriptor(
-                    name: 'greet',
+                new ConsoleForge\Descriptors\CommandDescriptor(
+                    name: 'greetFile',
                     description: 'Say Hello',
-                    args: [new \ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
-                    opts: [new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
-                    handler: function (string $name, \ConsoleForge\IO $io, bool $yell = false): int {
+                    args: [new ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
+                    opts: [new ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
+                    handler: function (string $name, ConsoleForge\IO $io, bool $yell = false): int {
+                        $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
                         // using termwind
+                        //(new ConsoleForge\Support\Notice\TermwindNoticeRenderer)->render(
+                        //    notice: ConsoleForge\Support\Notice\Notice::success(
+                        //        message: $msg,
+                        //    ),
+                        //    io: $io,
+                        //);
                         //    $io->render(
                         //        $yell ? "<div class='font-bold uppercase'>Hello, $name!</div>"
                         //              : "<div>Hello, $name!</div>"
@@ -50,8 +57,13 @@ final class InitFileCommand
                         // return Symfony\Component\Console\Command\Command::SUCCESS;
                 
                         // Fallback a SymfonyStyle vía IO
-                        $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
-                        $io->writeln($msg);
+                        (new ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer())->render(
+                            notice: ConsoleForge\Support\Notice\Notice::success(
+                                message: $msg,
+                            ),
+                            io: $io,
+                        );
+                        
                         return Symfony\Component\Console\Command\Command::SUCCESS;
                     }
                 ),
@@ -64,7 +76,7 @@ final class InitFileCommand
         (new TermwindNoticeRenderer)->render(
             notice: Notice::success(
                 message: 'Configuration file created successfully: config/console-forge.php',
-                detail: 'An example command was created, check inside the console-forge.php configuration file.',
+                detail: 'An sample command was created inside, for guidance',
             ),
             io: $io,
         );
