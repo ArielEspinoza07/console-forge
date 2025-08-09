@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ConsoleForge\Support;
 
 use ConsoleForge\Contracts\CommandDescriptorInterface;
-use ConsoleForge\InMemoryCommandRegistry;
+use ConsoleForge\Registry\InMemoryCommandRegistry;
 use LogicException;
 use Traversable;
 

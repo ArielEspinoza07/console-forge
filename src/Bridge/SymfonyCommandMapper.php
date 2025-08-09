@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace ConsoleForge;
+namespace ConsoleForge\Bridge;
 
 use ConsoleForge\Contracts\ArgDescriptorInterface;
 use ConsoleForge\Contracts\CommandDescriptorInterface;
 use ConsoleForge\Contracts\OptDescriptorInterface;
+use ConsoleForge\Handler\HandlerInvoker;
 use LogicException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application;

@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace ConsoleForge;
+namespace ConsoleForge\Handler;
 
 use BackedEnum;
 use Closure;
+use ConsoleForge\IO;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use ReflectionFunction;

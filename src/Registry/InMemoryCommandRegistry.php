@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ConsoleForge;
+namespace ConsoleForge\Registry;
 
 use ConsoleForge\Contracts\CommandDescriptorInterface;
 use ConsoleForge\Contracts\CommandRegistryInterface;
