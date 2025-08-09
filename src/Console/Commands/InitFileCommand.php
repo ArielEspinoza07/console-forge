@@ -50,10 +50,6 @@ final class InitFileCommand
                         //    ),
                         //    io: $io,
                         //);
-                        //    $io->render(
-                        //        $yell ? "<div class='font-bold uppercase'>Hello, $name!</div>"
-                        //              : "<div>Hello, $name!</div>"
-                        //    );
                         // return Symfony\Component\Console\Command\Command::SUCCESS;
                 
                         // Fallback a SymfonyStyle vía IO
