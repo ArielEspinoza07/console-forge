@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace src;
+namespace ConsoleForge;
 
-use ConsoleForge\IOInterface;
+use ConsoleForge\Contracts\IOInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use UnexpectedValueException;
 

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Descriptors;
+namespace ConsoleForge\Descriptors;
 
-use ConsoleForge\ArgDescriptorInterface;
-use ConsoleForge\CommandDescriptorInterface;
-use ConsoleForge\OptDescriptorInterface;
+use ConsoleForge\Contracts\ArgDescriptorInterface;
+use ConsoleForge\Contracts\CommandDescriptorInterface;
+use ConsoleForge\Contracts\OptDescriptorInterface;
 
 class CommandDescriptor implements CommandDescriptorInterface
 {
