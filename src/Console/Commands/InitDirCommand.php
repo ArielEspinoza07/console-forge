@@ -47,7 +47,7 @@ final class InitDirCommand
                     description: 'Say Hello',
                     args: [new \ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
                     opts: [new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
-                    handler: function (string $name, bool $yell = false, \ConsoleForge\IO $io): int {
+                    handler: function (string $name, \ConsoleForge\IO $io, bool $yell = false): int {
                         if (class_exists(\Termwind\render::class)) {
                             \Termwind\render(
                                 $yell ? "<div class='font-bold uppercase'>{Hello, {$name}}!</div>"
