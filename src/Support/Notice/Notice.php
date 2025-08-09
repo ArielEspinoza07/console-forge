@@ -57,21 +57,22 @@ final readonly class Notice
 
         // tailwind-like classes compatible with Termwind
         $color = $this->noticeType->color();
-        $border = "border border-{$color}-200";
-        $bg = "bg-{$color}-50";
-        $text = "text-{$color}-800";
-        $iconC = "text-{$color}-600";
+        $border = "border-{$color}";
+        $bg = "bg-{$color}-600";
+        $text = "text-{$color}-600";
+        $iconC = "text-{$color}-100";
 
         $detailHtml = $det !== null
-            ? "<div class=\"text-xs opacity-80 mt-1\">{$det}</div>"
+            ? '<span class="ml-3">'.$det.'</span>'
             : '';
+        $type = ucfirst($this->noticeType->value);
 
         return <<<HTML
-<div role="alert" aria-live="{$this->ariaLive}" class="flex items-center justify-between p-4 mb-4 rounded-lg {$bg} {$text} {$border}">
-  <div class="flex items-center">
-    <span class="w-5 h-5 mr-2 {$iconC}">{$this->noticeType->icon()}</span>
-    <div class="text-sm font-medium">{$msg}{$detailHtml}</div>
-  </div>
+<div aria-live="{$this->ariaLive}">
+    <div class="px-2 py-2">
+        <span><span class="mr-2">{$this->noticeType->icon()}</span><span class="{$text}"> {$type}:</span> {$msg}</span>
+        {$detailHtml}
+    </div>
 </div>
 HTML;
     }
