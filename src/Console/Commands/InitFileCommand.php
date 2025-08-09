@@ -7,8 +7,6 @@ namespace ConsoleForge\Console\Commands;
 use ConsoleForge\IO;
 use Symfony\Component\Console\Command\Command;
 
-use function Termwind\render;
-
 final class InitFileCommand
 {
     public function __invoke(IO $io, bool $force = false): int
@@ -16,7 +14,7 @@ final class InitFileCommand
         $configPath = getcwd().'/config/console-forge.php';
 
         if (file_exists($configPath) && ! $force) {
-            render(<<<'HTML'
+            $io->render(<<<'HTML'
                 <div class="px-2 py-1 bg-yellow-600 text-black font-bold">
                     ⚠️  The file config/console-forge.php already exists.
                 </div>
@@ -41,13 +39,13 @@ final class InitFileCommand
                     args: [new \ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
                     opts: [new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
                     handler: function (string $name, \ConsoleForge\IO $io, bool $yell = false): int {
-                        if (class_exists(\Termwind\render::class)) {
-                            \Termwind\render(
-                                $yell ? "<div class='font-bold uppercase'>{Hello, {$name}}!</div>"
-                                      : "<div>Hello, {$name}!</div>"
-                            );
-                            return Symfony\Component\Console\Command\Command::SUCCESS;
-                        }
+                        // using termwind
+                        // $io->render(
+                        //    $io->render(
+                        //        $yell ? "<div class='font-bold uppercase'>Hello, $name!</div>"
+                        //              : "<div>Hello, $name!</div>"
+                        //    );
+                        // return Symfony\Component\Console\Command\Command::SUCCESS;
                 
                         // Fallback a SymfonyStyle vía IO
                         $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
@@ -61,7 +59,7 @@ final class InitFileCommand
 
         file_put_contents($configPath, $template);
 
-        render(<<<'HTML'
+        $io->render(<<<'HTML'
             <div class="px-2 py-1 bg-green-600 text-white font-bold">
                 ✅  Configuration file created successfully: config/console-forge.php
             </div>
