@@ -8,6 +8,14 @@ interface CommandRegistryInterface
 {
     public function add(CommandDescriptorInterface $descriptor): self;
 
-    /** @return CommandDescriptorInterface[] */
-    public function all(): array;
+    public function get(string $name): CommandDescriptorInterface;
+
+    /** @return iterable<CommandDescriptorInterface> */
+    public function all(): iterable;
+
+    public function has(string $name): bool;
+
+    public function remove(string $name): void;
+
+    public function clear(): void;
 }
