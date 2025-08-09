@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace ConsoleForge\Support;
 
 use ConsoleForge\Contracts\CommandDescriptorInterface;
-use ConsoleForge\Registry\InMemoryCommandRegistry;
+use ConsoleForge\Contracts\CommandRegistryInterface;
 use LogicException;
 use Traversable;
 
@@ -58,7 +58,7 @@ final class ConfigLoader
         throw new LogicException('Config must return iterable, ["commands"=>iterable], or a single descriptor.');
     }
 
-    public static function loadFile(string $path, InMemoryCommandRegistry $registry): void
+    public static function loadFile(string $path, CommandRegistryInterface $registry): void
     {
         /** @var mixed $ret */
         $ret = require $path;
@@ -68,7 +68,7 @@ final class ConfigLoader
         }
     }
 
-    public static function loadProjectConfigs(InMemoryCommandRegistry $registry, string $cwd): void
+    public static function loadProjectConfigs(CommandRegistryInterface $registry, string $cwd): void
     {
         $single = $cwd.'/config/console-forge.php';
         if (is_file($single)) {
