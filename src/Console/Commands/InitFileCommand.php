@@ -40,7 +40,6 @@ final class InitFileCommand
                     opts: [new \ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
                     handler: function (string $name, \ConsoleForge\IO $io, bool $yell = false): int {
                         // using termwind
-                        // $io->render(
                         //    $io->render(
                         //        $yell ? "<div class='font-bold uppercase'>Hello, $name!</div>"
                         //              : "<div>Hello, $name!</div>"
