@@ -5,10 +5,10 @@ declare(strict_types=1);
 
 use ConsoleForge\Console\Commands\InitDirCommand;
 use ConsoleForge\Console\Commands\InitFileCommand;
-use ConsoleForge\Contracts\CommandDescriptorInterface;
 use ConsoleForge\Descriptors\CommandDescriptor;
 use ConsoleForge\Descriptors\OptDescriptor;
 use ConsoleForge\InMemoryCommandRegistry;
+use ConsoleForge\Support\ConfigLoader;
 use ConsoleForge\SymfonyCommandMapper;
 use Symfony\Component\Console\Application;
 
@@ -43,54 +43,8 @@ $registry->add(
         ),
 );
 
-// Helpers
-/**
- * @return iterable<CommandDescriptorInterface>
- */
-function normalizeDescriptors(mixed $ret): iterable
-{
-    if ($ret instanceof Traversable) {
-        return $ret;
-    }
-    if ($ret instanceof CommandDescriptorInterface) {
-        return [$ret];
-    }
-    if (is_array($ret)) {
-        // Supports ['commands' => [...]] or direct list
-        if (array_key_exists('commands', $ret) && is_iterable($ret['commands'])) {
-            return $ret['commands'];
-        }
-        return $ret; // we assume direct list
-    }
-
-    throw new LogicException('Config file must return iterable of descriptors, array with "commands", or a single descriptor.');
-}
-
-function loadFileIntoRegistry(string $path, InMemoryCommandRegistry $registry): void
-{
-    /** @var mixed $ret */
-    $ret = require $path;
-    foreach (normalizeDescriptors($ret) as $cmd) {
-        if (!$cmd instanceof CommandDescriptorInterface) {
-            throw new LogicException(sprintf('Invalid command descriptor in %s', $path));
-        }
-        $registry->add($cmd);
-    }
-}
-
-// Single file
-$single = getcwd() . '/config/console-forge.php';
-if (is_file($single)) {
-    loadFileIntoRegistry($single, $registry);
-}
-
-// Directory
-$dir = getcwd() . '/config/console-forge';
-if (is_dir($dir)) {
-    foreach (glob($dir . '/*.php') ?: [] as $file) {
-        loadFileIntoRegistry($file, $registry);
-    }
-}
+// project configs
+ConfigLoader::loadProjectConfigs($registry, getcwd());
 
 // Dynamic version if available
 $version = class_exists(\Composer\InstalledVersions::class)
