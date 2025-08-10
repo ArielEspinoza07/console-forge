@@ -15,6 +15,8 @@ use Symfony\Component\Console\Command\Command;
 
 final class InitDirCommand
 {
+    use HasTemplate;
+
     public function __invoke(IO $io, bool $force = false): int
     {
         $configDir = getcwd().'/config/console-forge';
@@ -32,66 +34,27 @@ final class InitDirCommand
         }
 
         if (is_dir($configDir) && $force) {
-            $this->deleteDir($configDir);
+            $response = $io->ask('Are you sure you want to overwrite the existing directory {config/console-forge/}? (y/n)');
+            if ($response !== 'y') {
+                (new TermwindNoticeRenderer)->render(
+                    notice: Notice::info(
+                        message: 'Configuration directory not overwritten.',
+                    ),
+                    io: $io,
+                );
+
+                return Command::FAILURE;
+            }
+            $this->deleteDir($configDir, $io);
         }
 
-        mkdir($configDir, 0777, true);
-
-        $exampleFile = $configDir.'/example.php';
-        $template = <<<'PHP'
-        <?php
-
-        return [
-            'commands' => [
-                new ConsoleForge\Descriptors\CommandDescriptor(
-                    name: 'greetDir',
-                    description: 'Say Hello',
-                    args: [new ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
-                    opts: [new ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
-                    handler: function (Symfony\Component\Console\Input\InputInterface $input, ConsoleForge\IO $io, bool $yell = false): int {
-                        $name = $input->getArgument('name');
-                        if ($name === null) {
-                            (new ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer)->render(
-                                notice: ConsoleForge\Support\Notice\Notice::error(
-                                    message: 'Argument name is required, can no be empty.',
-                                    detail: 'Try --help for more information.',
-                                ),
-                                io: $io,
-                            );
-        
-                            return Symfony\Component\Console\Command\Command::FAILURE;
-                        }
-                        $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
-                        // using termwind
-                        //(new ConsoleForge\Support\Notice\TermwindNoticeRenderer)->render(
-                        //    notice: ConsoleForge\Support\Notice\Notice::success(
-                        //        message: $msg,
-                        //    ),
-                        //    io: $io,
-                        //);
-                        // return Symfony\Component\Console\Command\Command::SUCCESS;
-                
-                        // Fallback a SymfonyStyle vía IO
-                        (new ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer())->render(
-                            notice: ConsoleForge\Support\Notice\Notice::success(
-                                message: $msg,
-                            ),
-                            io: $io,
-                        );
-                        
-                        return Symfony\Component\Console\Command\Command::SUCCESS;
-                    }
-                ),
-            ],
-        ];
-        PHP;
-
-        file_put_contents($exampleFile, $template);
+        $this->createDirectory($configDir, $io);
+        $this->storeExampleOnDirectory($configDir, $io);
 
         (new TermwindNoticeRenderer)->render(
             notice: Notice::success(
-                message: 'Configuration directory created successfully: config/console-forge',
-                detail: 'A sample file with a sample command was created: example.php',
+                message: 'Command executed successfully,',
+                detail: 'You can create your own files and put your commands, use the sample as a guide',
             ),
             io: $io,
         );
@@ -99,7 +62,18 @@ final class InitDirCommand
         return Command::SUCCESS;
     }
 
-    private function deleteDir(string $dir): void
+    private function createDirectory(string $dir, IO $io): void
+    {
+        mkdir($dir, 0750, true);
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::info(
+                message: 'config/console-forge directory created successfully.',
+            ),
+            io: $io,
+        );
+    }
+
+    private function deleteDir(string $dir, IO $io): void
     {
         $files = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS),
@@ -111,5 +85,26 @@ final class InitDirCommand
         }
 
         rmdir($dir);
+
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::info(
+                message: 'config/console-forge directory deleted.',
+            ),
+            io: $io,
+        );
+    }
+
+    public function storeExampleOnDirectory(string $configDir, IO $io): void
+    {
+        $exampleFile = $configDir.'/example.php';
+        $template = $this->getCommandTemplate('greet:dir');
+
+        file_put_contents($exampleFile, $template);
+        (new TermwindNoticeRenderer)->render(
+            notice: Notice::info(
+                message: 'Sample file created [example.php]',
+            ),
+            io: $io,
+        );
     }
 }
