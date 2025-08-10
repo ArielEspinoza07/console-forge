@@ -63,7 +63,7 @@ final readonly class Notice
         $iconC = "text-{$color}-100";
 
         $detailHtml = $det !== null
-            ? '<span class="ml-3">'.$det.'</span>'
+            ? '<span class="ml-1">'.$det.'</span>'
             : '';
         $type = ucfirst($this->noticeType->value);
 
