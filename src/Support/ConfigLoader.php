@@ -6,11 +6,17 @@ namespace ConsoleForge\Support;
 
 use ConsoleForge\Contracts\CommandDescriptorInterface;
 use ConsoleForge\Contracts\CommandRegistryInterface;
+use FilesystemIterator;
 use LogicException;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Traversable;
 
 final class ConfigLoader
 {
+    private const string CONFIG_PATH = '/config/';
+
     /**
      * @return iterable<CommandDescriptorInterface>
      */
@@ -70,15 +76,21 @@ final class ConfigLoader
 
     public static function loadProjectConfigs(CommandRegistryInterface $registry, string $cwd): void
     {
-        $single = $cwd.'/config/console-forge.php';
-        if (is_file($single)) {
-            self::loadFile($single, $registry);
+        $directoryPath = $cwd.self::CONFIG_PATH;
+
+        if (! is_dir($directoryPath)) {
+            return;
         }
 
-        $dir = $cwd.'/config/console-forge';
-        if (is_dir($dir)) {
-            foreach (glob($dir.'/*.php') ?: [] as $file) {
-                self::loadFile($file, $registry);
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directoryPath, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::CHILD_FIRST
+        );
+
+        /** @var SplFileInfo $file */
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                self::loadFile($file->getPathname(), $registry);
             }
         }
     }
