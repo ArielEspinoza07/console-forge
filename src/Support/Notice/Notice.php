@@ -45,7 +45,7 @@ final readonly class Notice
 
     public function rawString(): string
     {
-        $head = ucfirst($this->noticeType->value).': '.$this->message;
+        $head = $this->message;
 
         return $this->detail !== null ? $head.' — '.$this->detail : $head;
     }
