@@ -41,7 +41,19 @@ final class InitFileCommand
                     description: 'Say Hello',
                     args: [new ConsoleForge\Descriptors\ArgDescriptor('name', 'Person name')],
                     opts: [new ConsoleForge\Descriptors\OptDescriptor('yell', 'y', 'Uppercase')],
-                    handler: function (string $name, ConsoleForge\IO $io, bool $yell = false): int {
+                    handler: function (Symfony\Component\Console\Input\InputInterface $input, ConsoleForge\IO $io, bool $yell = false): int {
+                        $name = $input->getArgument('name');
+                        if ($name === null) {
+                            (new ConsoleForge\Support\Notice\SymfonyStyleNoticeRenderer)->render(
+                                notice: ConsoleForge\Support\Notice\Notice::error(
+                                    message: 'Argument name is required, can no be empty.',
+                                    detail: 'Try --help for more information.',
+                                ),
+                                io: $io,
+                            );
+        
+                            return Symfony\Component\Console\Command\Command::FAILURE;
+                        }
                         $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
                         // using termwind
                         //(new ConsoleForge\Support\Notice\TermwindNoticeRenderer)->render(
