@@ -43,6 +43,7 @@ use ConsoleForge\Descriptors\OptDescriptor;
 use ConsoleForge\Support\Notice\Notice;
 use ConsoleForge\Support\Notice\TermwindNoticeRenderer;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 
 $greetCommand = new CommandDescriptor(
     name: 'greet',
@@ -53,7 +54,19 @@ $greetCommand = new CommandDescriptor(
     opts: [
         new OptDescriptor('yell', 'y', 'Uppercase greeting')
     ],
-    handler: function (IO $io, string $name, bool $yell = false): void {
+    handler: function (InputInterface $input, IO $io, bool $yell = false): void {
+        $name = $input->getArgument('name');
+        if ($name === null) {
+            (new TermwindNoticeRenderer)->render(
+                notice: Notice\Notice::error(
+                    message: 'Argument name is required.',
+                    detail: 'Try --help for more information.',
+                ),
+                io: $io,
+            );
+
+            return Command::FAILURE;
+        }
         $msg = $yell ? strtoupper("Hello, $name!") : "Hello, $name!";
         (new TermwindNoticeRenderer)->render(
             notice: Notice::success(
@@ -78,8 +91,20 @@ use Symfony\Component\Console\Command\Command;
 
 final class CreateUser
 {
-    public function __invoke(IO $io, string $email, bool $admin = false): int
+    public function __invoke(InputInterface $input, IO $io, bool $admin = false): int
     {
+        $name = $input->getArgument('name');
+        if ($name === null) {
+            (new SymfonyStyleNoticeRenderer)->render(
+                notice: Notice\Notice::error(
+                    message: 'Argument name is required.',
+                    detail: 'Try --help for more information.',
+                ),
+                io: $io,
+            );
+
+            return Command::FAILURE;
+        }
         (new SymfonyStyleNoticeRenderer())->render(
             notice: Notice::success(
                 message: "User {$email} created" . ($admin ? ' as admin' : ''),
