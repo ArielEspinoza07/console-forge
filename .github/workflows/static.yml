@@ -1,4 +1,4 @@
-name: Formats
+name: Static Analysis
 
 on:
   push:
