@@ -4,42 +4,36 @@
 declare(strict_types=1);
 
 use ConsoleForge\App;
+use ConsoleForge\Builders\CommandBuilder;
 use ConsoleForge\Console\Commands\InitDirCommand;
 use ConsoleForge\Console\Commands\InitFileCommand;
-use ConsoleForge\Descriptors\CommandDescriptor;
 use ConsoleForge\Descriptors\OptDescriptor;
 use ConsoleForge\Registry\InMemoryCommandRegistry;
 use ConsoleForge\Support\ConfigLoader;
 
-require __DIR__ . '/../vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 // Search if nunomaduro/collision is installed and register it
 // for pretty error messages
 if (class_exists(\NunoMaduro\Collision\Provider::class)) {
-    (new \NunoMaduro\Collision\Provider())->register();
+    (new \NunoMaduro\Collision\Provider)->register();
 }
 
-$registry = new InMemoryCommandRegistry();
+$registry = new InMemoryCommandRegistry;
 
 // Built-in commands
 $registry->add(
-        descriptor: new CommandDescriptor(
-                name: 'init:file',
-                description: 'Create a single configuration file config/console-forge.php',
-                opts: [
-                        OptDescriptor::flag('force', 'f', 'Overwrites if already exists'),
-                ],
-                handler: InitFileCommand::class,
-        ),
+    descriptor: CommandBuilder::make('init:file')
+        ->desc('Create a single configuration file config/console-forge.php')
+        ->opts(OptDescriptor::flag('force', 'f', 'Overwrites if already exists'))
+        ->handler(InitFileCommand::class)
+        ->build(),
 )->add(
-        descriptor: new CommandDescriptor(
-                name: 'init:dir',
-                description: 'Create the config/console-forge directory for multiple files',
-                opts: [
-                        OptDescriptor::flag('force', 'f', 'Overwrites if already exists'),
-                ],
-                handler: InitDirCommand::class
-        ),
+    descriptor: CommandBuilder::make('init:dir')
+        ->desc('Create the config/console-forge directory for multiple files')
+        ->opts(OptDescriptor::flag('force', 'f', 'Overwrites if already exists'))
+        ->handler(InitDirCommand::class)
+        ->build(),
 );
 
 if (class_exists(ConfigLoader::class)) {
@@ -53,9 +47,9 @@ $version = class_exists(\Composer\InstalledVersions::class)
         : 'dev';
 
 $app = App::make(
-        registry: $registry,
-        name: 'ConsoleForge',
-        version: $version,
+    registry: $registry,
+    name: 'ConsoleForge',
+    version: $version,
 );
 
 $app->run();
