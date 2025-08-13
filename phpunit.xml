@@ -6,6 +6,9 @@
          cacheDirectory=".phpunit.cache"
          stopOnFailure="true">
     <testsuites>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests</directory>
+        </testsuite>
         <testsuite name="Unit">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
