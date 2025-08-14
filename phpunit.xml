@@ -4,15 +4,19 @@
          bootstrap="vendor/autoload.php"
          colors="true"
          cacheDirectory=".phpunit.cache"
-         stopOnFailure="true">
-    <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests</directory>
-        </testsuite>
-    </testsuites>
+         stopOnFailure="true"
+>
     <source>
         <include>
             <directory suffix=".php">./src</directory>
         </include>
     </source>
+    <testsuites>
+        <testsuite name="Feature">
+            <directory suffix=".php">./tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory suffix=".php">./tests/Unit</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>

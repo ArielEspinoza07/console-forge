@@ -24,13 +24,13 @@ $registry = new InMemoryCommandRegistry;
 // Built-in commands
 $registry->add(
     descriptor: CommandBuilder::make('init:file')
-        ->desc('Create a single configuration file config/console-forge.php')
+        ->description('Create a single configuration file config/console-forge.php')
         ->opts(OptDescriptor::flag('force', 'f', 'Overwrites if already exists'))
         ->handler(InitFileCommand::class)
         ->build(),
 )->add(
     descriptor: CommandBuilder::make('init:dir')
-        ->desc('Create the config/console-forge directory for multiple files')
+        ->description('Create the config/console-forge directory for multiple files')
         ->opts(OptDescriptor::flag('force', 'f', 'Overwrites if already exists'))
         ->handler(InitDirCommand::class)
         ->build(),

@@ -10,10 +10,7 @@ use ConsoleForge\Contracts\OptDescriptorInterface;
 use ConsoleForge\Descriptors\CommandDescriptor;
 use LogicException;
 
-/**
- * @phpstan-consistent-constructor
- */
-class CommandBuilder
+final class CommandBuilder
 {
     private string $name;
 
@@ -38,66 +35,90 @@ class CommandBuilder
 
     protected function __construct() {}
 
-    public static function make(string $name): static
+    public static function make(string $name): self
     {
-        $s = new static;
+        if ($name === '' || ! preg_match('/^[A-Za-z0-9:_-]+$/', $name)) {
+            throw new LogicException(sprintf("Invalid command name '%s'.", $name));
+        }
+
+        $s = new self;
         $s->name = $name;
 
         return $s;
     }
 
-    public function desc(string $d): static
+    public function description(string $description): self
     {
-        $this->description = $d;
+        $this->description = $description;
 
         return $this;
     }
 
-    public function arg(ArgDescriptorInterface $a): static
+    public function arg(ArgDescriptorInterface $a): self
     {
         $this->args[] = $a;
 
         return $this;
     }
 
-    public function args(ArgDescriptorInterface ...$a): static
+    public function args(ArgDescriptorInterface ...$a): self
     {
         array_push($this->args, ...$a);
 
         return $this;
     }
 
-    public function opt(OptDescriptorInterface $o): static
+    /** @param list<ArgDescriptorInterface> $a */
+    public function setArgs(array $a): self
+    {
+        $this->args = $a;
+
+        return $this;
+    }
+
+    public function opt(OptDescriptorInterface $o): self
     {
         $this->opts[] = $o;
 
         return $this;
     }
 
-    public function opts(OptDescriptorInterface ...$o): static
+    public function opts(OptDescriptorInterface ...$o): self
     {
         array_push($this->opts, ...$o);
 
         return $this;
     }
 
-    public function handler(mixed $h): static
+    /** @param list<OptDescriptorInterface> $o */
+    public function setOpts(array $o): self
     {
-        $this->handler = $h;
+        $this->opts = $o;
 
         return $this;
     }
 
-    public function help(?string $h): static
+    /**
+     * @param  callable|array{object|string, string}|string  $handler
+     * @return $this
+     */
+    public function handler(callable|array|string $handler): self
     {
-        $this->help = $h;
+        $this->handler = $handler;
 
         return $this;
     }
 
-    public function hidden(bool $h = true): static
+    public function help(?string $help): self
     {
-        $this->hidden = $h;
+        $this->help = $help;
+
+        return $this;
+    }
+
+    public function hidden(bool $hidden = true): self
+    {
+        $this->hidden = $hidden;
 
         return $this;
     }
@@ -106,19 +127,26 @@ class CommandBuilder
      * @param  array<string, mixed>  $e
      * @return $this
      */
-    public function extra(array $e): static
+    public function extra(array $e): self
     {
         $this->extra = $e;
 
         return $this;
     }
 
+    /** @param array<string,mixed> $e */
+    public function mergeExtra(array $e): self
+    {
+        $this->extra = array_merge($this->extra, $e);
+
+        return $this;
+    }
+
+    /**
+     * Builds and validates. May throw ConsoleForge\Exceptions\DescriptorException.
+     */
     public function build(): CommandDescriptorInterface
     {
-        if ($this->name === '') {
-            throw new LogicException('Command name cannot be empty. Use CommandBuilder::make("name").');
-        }
-
         return new CommandDescriptor(
             name: $this->name,
             description: $this->description,

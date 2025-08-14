@@ -6,7 +6,10 @@ namespace ConsoleForge\Descriptors;
 
 use Closure;
 use ConsoleForge\Contracts\ArgDescriptorInterface;
-use LogicException;
+use ConsoleForge\Exceptions\Arg\ArrayDefaultTypeMismatch;
+use ConsoleForge\Exceptions\Arg\InvalidArgumentName;
+use ConsoleForge\Exceptions\Arg\NonArrayDefaultIsArray;
+use ConsoleForge\Exceptions\Arg\RequiredArgHasDefault;
 
 /**
  * Immutable value-object for command arguments.
@@ -46,33 +49,27 @@ final readonly class ArgDescriptor implements ArgDescriptorInterface
             : ($coercer instanceof Closure ? $coercer : Closure::fromCallable($coercer));
 
         if ($this->name === '') {
-            throw new LogicException('Argument name cannot be empty.');
+            throw InvalidArgumentName::for($this->name);
         }
 
         // REQUIRED arg cannot have default
         if ($this->required && $this->default !== null) {
-            throw new LogicException(
-                sprintf("Argument '%s' is REQUIRED and cannot have a default value.", $this->name)
-            );
+            throw RequiredArgHasDefault::for($this->name);
         }
 
         // Array arg → default must be array or null
         if ($this->isArray && $this->default !== null && ! is_array($this->default)) {
-            throw new LogicException(
-                sprintf("Argument '%s' is array; default value must be array or null.", $this->name)
-            );
+            throw ArrayDefaultTypeMismatch::for($this->name);
         }
 
         // Non-array arg → default must not be array
         if (! $this->isArray && is_array($this->default)) {
-            throw new LogicException(
-                sprintf("Argument '%s' is not array; default value cannot be an array.", $this->name)
-            );
+            throw NonArrayDefaultIsArray::for($this->name);
         }
 
         // Simple name guard
         if (! preg_match('/^[a-zA-Z0-9:_-]+$/', $this->name)) {
-            throw new LogicException(sprintf("Invalid argument name '%s'.", $this->name));
+            throw InvalidArgumentName::for($this->name);
         }
     }
 
