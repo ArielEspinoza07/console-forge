@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace ConsoleForge\Descriptors;
 
+use Closure;
 use ConsoleForge\Contracts\ArgDescriptorInterface;
 use ConsoleForge\Contracts\CommandDescriptorInterface;
 use ConsoleForge\Contracts\OptDescriptorInterface;
 use ConsoleForge\Exceptions\DescriptorException;
 
-class CommandDescriptor implements CommandDescriptorInterface
+final readonly class CommandDescriptor implements CommandDescriptorInterface
 {
     /**
      * @param  list<ArgDescriptorInterface>  $args
@@ -514,7 +515,7 @@ class CommandDescriptor implements CommandDescriptorInterface
         // Detailed validation by type
 
         // Closure
-        if ($h instanceof \Closure) {
+        if ($h instanceof Closure) {
             return;
         }
 
@@ -569,7 +570,7 @@ class CommandDescriptor implements CommandDescriptorInterface
 
         // String callable
         if (is_string($h)) {
-            // Función global
+            // global function
             if (function_exists($h)) {
                 return;
             }

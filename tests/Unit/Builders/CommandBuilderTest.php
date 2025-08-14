@@ -176,7 +176,7 @@ it('accepts array handler with class and static method', function () {
 });
 
 it('accepts string function handler', function () {
-    function _test_sample_handler() {};
+    function _test_sample_handler() {}
 
     $cmd = CommandBuilder::make('cmd')
         ->handler('_test_sample_handler')
