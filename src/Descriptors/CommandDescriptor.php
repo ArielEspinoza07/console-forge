@@ -180,9 +180,10 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
 
     public function replaceArg(ArgDescriptorInterface $arg): self
     {
-        /** @var list<ArgDescriptorInterface> $args */
+        /** @var array<int, ArgDescriptorInterface> $args */
         $args = $this->args;
         $found = false;
+
         foreach ($args as $i => $a) {
             if ($a->name() === $arg->name()) {
                 $args[$i] = $arg;
@@ -190,9 +191,13 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
                 break;
             }
         }
+
         if (! $found) {
             $args[] = $arg;
         }
+
+        /** @var list<ArgDescriptorInterface> $args */
+        $args = array_values($args);
 
         return new self(
             name: $this->name,
@@ -274,9 +279,10 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
 
     public function replaceOpt(OptDescriptorInterface $opt): self
     {
-        /** @var list<OptDescriptorInterface> $opts */
+        /** @var array<int, OptDescriptorInterface> $opts */
         $opts = $this->opts;
         $found = false;
+
         foreach ($opts as $i => $o) {
             if ($o->name() === $opt->name()) {
                 $opts[$i] = $opt;
@@ -284,9 +290,13 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
                 break;
             }
         }
+
         if (! $found) {
             $opts[] = $opt;
         }
+
+        /** @var list<OptDescriptorInterface> $opts */
+        $opts = array_values($opts);
 
         return new self(
             name: $this->name,
