@@ -47,9 +47,9 @@ final class CommandBuilder
         return $s;
     }
 
-    public function description(string $d): self
+    public function description(string $description): self
     {
-        $this->description = $d;
+        $this->description = $description;
 
         return $this;
     }
@@ -99,26 +99,26 @@ final class CommandBuilder
     }
 
     /**
-     * @param  callable|array{object|string, string}|string  $h
+     * @param  callable|array{object|string, string}|string  $handler
      * @return $this
      */
-    public function handler(callable|array|string $h): self
+    public function handler(callable|array|string $handler): self
     {
-        $this->handler = $h;
+        $this->handler = $handler;
 
         return $this;
     }
 
-    public function help(?string $h): self
+    public function help(?string $help): self
     {
-        $this->help = $h;
+        $this->help = $help;
 
         return $this;
     }
 
-    public function hidden(bool $h = true): self
+    public function hidden(bool $hidden = true): self
     {
-        $this->hidden = $h;
+        $this->hidden = $hidden;
 
         return $this;
     }
