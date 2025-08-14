@@ -144,8 +144,6 @@ final class CommandBuilder
 
     /**
      * Builds and validates. May throw ConsoleForge\Exceptions\DescriptorException.
-     *
-     * @return CommandDescriptorInterface
      */
     public function build(): CommandDescriptorInterface
     {
