@@ -180,6 +180,7 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
 
     public function replaceArg(ArgDescriptorInterface $arg): self
     {
+        /** @var list<ArgDescriptorInterface> $args */
         $args = $this->args;
         $found = false;
         foreach ($args as $i => $a) {
@@ -273,6 +274,7 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
 
     public function replaceOpt(OptDescriptorInterface $opt): self
     {
+        /** @var list<OptDescriptorInterface> $opts */
         $opts = $this->opts;
         $found = false;
         foreach ($opts as $i => $o) {
