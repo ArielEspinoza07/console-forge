@@ -6,7 +6,14 @@ namespace ConsoleForge\Descriptors;
 
 use Closure;
 use ConsoleForge\Contracts\OptDescriptorInterface;
-use LogicException;
+use ConsoleForge\Exceptions\Opt\ArrayOptionDefaultTypeMismatch;
+use ConsoleForge\Exceptions\Opt\ArrayOptionMustAcceptValue;
+use ConsoleForge\Exceptions\Opt\InvalidOptionName;
+use ConsoleForge\Exceptions\Opt\InvalidOptionShortcut;
+use ConsoleForge\Exceptions\Opt\NegatableOptionCannotAcceptValue;
+use ConsoleForge\Exceptions\Opt\NegatableOptionCannotBeArray;
+use ConsoleForge\Exceptions\Opt\NonArrayOptionDefaultIsArray;
+use ConsoleForge\Exceptions\Opt\ValueNoneOptionMustHaveNullDefault;
 
 /**
  * Immutable value-object for command options.
@@ -56,62 +63,43 @@ final readonly class OptDescriptor implements OptDescriptorInterface
 
         // ---- Validations (Symfony semantics) ----
 
-        if ($this->name === '') {
-            throw new LogicException('Option name cannot be empty.');
-        }
-        // simple guard (letters, digits, dashes/underscores/colons)
-        if (! preg_match('/^[a-zA-Z0-9:_-]+$/', $this->name)) {
-            throw new LogicException(sprintf("Invalid option name '%s'.", $this->name));
+        if ($this->name === '' || ! preg_match('/^[a-zA-Z0-9:_-]+$/', $this->name)) {
+            throw InvalidOptionName::for($this->name);
         }
 
         // Shortcut may be null, single char "a", or multi "a|b|c"
         if ($this->shortcut !== null) {
             if (! preg_match('/^[A-Za-z](\|[A-Za-z])*$/', $this->shortcut)) {
-                throw new LogicException(sprintf(
-                    "Invalid shortcut '%s'. Use letters, optionally separated by '|', e.g. 'a' or 'a|b'.",
-                    $this->shortcut
-                ));
+                throw InvalidOptionShortcut::for($this->name);
             }
         }
 
         // Negatable options cannot accept values nor be arrays
-        if ($this->negatable && ($this->acceptValue || $this->isArray)) {
-            throw new LogicException(sprintf(
-                "Option '--%s': negatable options cannot accept values or be arrays.",
-                $this->name
-            ));
+        if ($this->negatable && $this->acceptValue) {
+            throw NegatableOptionCannotAcceptValue::for($this->name);
+        }
+        if ($this->negatable && $this->isArray) {
+            throw NegatableOptionCannotBeArray::for($this->name);
         }
 
         // Array options must accept values
         if ($this->isArray && ! $this->acceptValue) {
-            throw new LogicException(sprintf(
-                "Option '--%s': array options must accept values.",
-                $this->name
-            ));
+            throw ArrayOptionMustAcceptValue::for($this->name);
         }
 
         // VALUE_NONE (no value): default must be null
         if (! $this->acceptValue && $this->default !== null) {
-            throw new LogicException(sprintf(
-                "Option '--%s' does not accept a value; default must be null.",
-                $this->name
-            ));
+            throw ValueNoneOptionMustHaveNullDefault::for($this->name);
         }
 
         // Array options: default must be array or null
         if ($this->isArray && $this->default !== null && ! is_array($this->default)) {
-            throw new LogicException(sprintf(
-                "Option '--%s' is array; default value must be array or null.",
-                $this->name
-            ));
+            throw ArrayOptionDefaultTypeMismatch::for($this->name);
         }
 
         // Non-array options: default must not be array
         if (! $this->isArray && is_array($this->default)) {
-            throw new LogicException(sprintf(
-                "Option '--%s' is not array; default value cannot be an array.",
-                $this->name
-            ));
+            throw NonArrayOptionDefaultIsArray::for($this->name);
         }
     }
 
