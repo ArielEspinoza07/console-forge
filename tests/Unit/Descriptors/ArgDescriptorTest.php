@@ -166,14 +166,14 @@ it('withCoercer() returns a new instance and leaves the original unchanged', fun
         coercer: fn ($v) => strtoupper((string) $v),
     );
 
-    // Mismo estado base
+    // Same base state
     expect($a2->name())->toBe($a1->name())
         ->and($a2->description())->toBe($a1->description())
         ->and($a2->required())->toBe($a1->required())
         ->and($a2->isArray())->toBe($a1->isArray())
         ->and($a2->default())->toBe($a1->default());
 
-    // Coercers distintos
+    // Different coercers
     expect($a1->coercer())->toBeNull();
 
     $c2 = $a2->coercer();
@@ -185,7 +185,9 @@ it('withCoercer() returns a new instance and leaves the original unchanged', fun
 // --- Regex positiva de nombre ---
 
 it('allows simple valid names matching the regex', function () {
-    $a = new ArgDescriptor(name: 'foo:bar_baz-123');
+    $a = new ArgDescriptor(
+        name: 'foo:bar_baz-123',
+    );
 
     expect($a->name())->toBe('foo:bar_baz-123');
 });
