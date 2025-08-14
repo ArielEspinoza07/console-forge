@@ -363,7 +363,10 @@ class CommandDescriptor implements CommandDescriptorInterface
         );
     }
 
-    public function withHandler(callable|string $handler): self
+    /**
+     * @param  callable|array{object|string, string}|string  $handler
+     */
+    public function withHandler(callable|array|string $handler): self
     {
         return new self(
             name: $this->name,
