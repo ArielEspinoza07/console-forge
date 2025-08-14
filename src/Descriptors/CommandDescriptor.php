@@ -18,14 +18,14 @@ final readonly class CommandDescriptor implements CommandDescriptorInterface
      * @param  array<string, mixed>  $extra
      */
     public function __construct(
-        protected string $name,
-        protected string $description = '',
-        protected array $args = [],
-        protected array $opts = [],
-        protected mixed $handler = null,
-        protected ?string $help = null,
-        protected bool $hidden = false,
-        protected array $extra = [],
+        private string $name,
+        private string $description = '',
+        private array $args = [],
+        private array $opts = [],
+        private mixed $handler = null,
+        private ?string $help = null,
+        private bool $hidden = false,
+        private array $extra = [],
     ) {
         $this->validate();
     }
